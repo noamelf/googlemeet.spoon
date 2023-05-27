@@ -119,14 +119,11 @@ end
 
 -- Create the Spoon object
 local obj = {}
-obj.__index = obj
 
 -- Metadata
 obj.name = "GoogleMeet"
 obj.version = "1.0"
 obj.author = "Noam Elfanbaum"
-obj.homepage = "https://noamelf.com"
-obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 function obj:start()
     keyLogger = hs.eventtap.new({hs.eventtap.event.types.keyDown}, controlMeeting)
