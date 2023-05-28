@@ -1,6 +1,6 @@
 # GoogleMeet.spoon
 
-A Hammerspoon spoon designed to enhance Google Meet usage by providing a set of automated controls. These include mic/video toggle, swift meeting switches, and auto-join features, effectively circumventing Google Meet's slower UI.
+A [Hammerspoon](https://github.com/Hammerspoon/hammerspoon) spoon designed to enhance Google Meet usage by providing a set of automated controls. These include mic/video toggle, swift meeting switches, and auto-join features, effectively circumventing Google Meet's slower UI.
 
 ## Features
 
