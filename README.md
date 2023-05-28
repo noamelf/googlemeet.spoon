@@ -10,8 +10,8 @@ A Hammerspoon spoon designed to enhance Google Meet usage by providing a set of 
 
 ## Usage
 
-Clone the repo to your Spoons dir, usually `~/.hammerspoon/Spoons`
-Then in your init.lua add the following:
+Clone the repository to your Spoons directory. The default location is `~/.hammerspoon/Spoons`.
+Update your init.lua file with the following lines of code:
 
 ```lua
 GoogleMeet = hs.loadSpoon("GoogleMeet")
