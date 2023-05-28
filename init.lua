@@ -65,11 +65,8 @@ local function executeMeetCmd(toggleFeature, shortcut)
     return true
 end
 
-
-
 -- Function to join the next meeting
 local function joinNextMeeting()
-    hs.alert.show("Joining Meeting")
     print("Joining Meeting")
     executeJavaScriptFromFile("Choose and click meeting", "click-on-closest-time.js")
     -- div[data-begin-time]
@@ -81,10 +78,9 @@ local function joinNextMeeting()
     return true
 end
 
-
 -- Function to join the next meeting
 local function LeaveMeetingAndJoinNext()
-    hs.alert.show("Leaving Meeting")
+    print("Leaving meeting and joinin the next one")
     executeCheckAndClickElement("Leave meeting", 'button[aria-label=\"Leave call\"]')
     hs.timer.doAfter(4, function()
         executeCheckAndClickElement("Really leave meeting", 'button[jsname=\"dqt8Pb\"]')
@@ -95,27 +91,6 @@ local function LeaveMeetingAndJoinNext()
     return true
 end
 
--- Function to control the meeting
-local function controlMeeting(event)
-    local keyCode = event:getKeyCode()
-    local eventType = event:getType()
-
-    if eventType == hs.eventtap.event.types.keyDown then
-        if keyCode == hs.keycodes.map["F1"] then
-            return executeMeetCmd("microphone", "d")
-        elseif keyCode == hs.keycodes.map["F2"] then
-            return executeMeetCmd("camera", "e")
-        elseif keyCode == hs.keycodes.map["F3"] then
-            return joinNextMeeting()
-        elseif keyCode == hs.keycodes.map["F4"] then
-            return LeaveMeetingAndJoinNext()
-        else
-            return false
-        end
-    end
-
-    return false
-end
 
 -- Create the Spoon object
 local obj = {}
@@ -125,9 +100,15 @@ obj.name = "GoogleMeet"
 obj.version = "1.0"
 obj.author = "Noam Elfanbaum"
 
-function obj:start()
-    keyLogger = hs.eventtap.new({hs.eventtap.event.types.keyDown}, controlMeeting)
-    keyLogger:start()
+function obj:bindHotKeys(mapping)
+    local spec = {
+        toggleMic = hs.fnutils.partial(executeMeetCmd, "microphone", "d"),
+        toggleCamera = hs.fnutils.partial(executeMeetCmd, "camera", "e"),
+        joinNextMeeting = joinNextMeeting,
+        LeaveMeetingAndJoinNext = LeaveMeetingAndJoinNext
+    }
+    hs.spoons.bindHotkeysToSpec(spec, mapping)
+    return self
 end
 
 return obj
