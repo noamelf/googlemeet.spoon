@@ -1,25 +1,19 @@
 var now = new Date();
-var closest;
-var closestDiff = Infinity;
-var clicked = false;
 
 var divs = document.querySelectorAll('div[data-begin-time]');
+var clicked = false;
+
 
 divs.forEach(function (div) {
     // Assuming the time is in milliseconds since the Unix Epoch
     var time = new Date(Number(div.getAttribute('data-begin-time')));
 
     var diff = Math.abs(now - time);
-
-    if (diff < closestDiff) {
-        closest = div;
-        closestDiff = diff;
+    if (diff < 60 * 1000) {
+        div.click();
+        clicked = true;
     }
 });
 
-if (closest) {
-    closest.click(); // Perform a click event on the closest time div
-    clicked = true;
-}
-
 clicked;
+
