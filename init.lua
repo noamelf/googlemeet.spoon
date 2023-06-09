@@ -18,7 +18,7 @@ local function executeJavaScript(jsCode)
 
     local modifiedContents = string.gsub(contents, oldString, newString)
     local result, object, descriptor = hs.osascript.applescript(modifiedContents)
-    if not result then 
+    if not result then
         print("JS code failed: \n" .. jsCode)
     end
     return result
@@ -40,7 +40,7 @@ local function checkAndClickElementJS(selector)
         var element = document.querySelector(']] .. selector .. [[');
         if (element) {
             element.click();
-        } 
+        }
     ]]
 end
 
@@ -112,5 +112,3 @@ function obj:bindHotKeys(mapping)
 end
 
 return obj
-
-
