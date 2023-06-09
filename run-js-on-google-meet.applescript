@@ -17,7 +17,7 @@ tell application "Google Chrome"
         repeat with aTab in tabList
             if my contains_substring(title of aTab, "Meet") then
                 tell aTab
-                    execute javascript "alert('Hello, world!')"
+                    return execute javascript "alert('Hello, world!')"
                 end tell
                 exit repeat
             end if
