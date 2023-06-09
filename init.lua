@@ -1,5 +1,5 @@
 local function loadfile(filename)
-    filepath = hs.spoons.resourcePath(filename)
+    local filepath = hs.spoons.resourcePath(filename)
     local file = io.open(filepath, "r")
     if file == nil then
         print("Could not open file: " .. filename)
@@ -12,16 +12,17 @@ end
 
 -- Function to execute JavaScript via AppleScript
 local function executeJavaScript(jsCode)
+    local contents = loadfile("run-js-on-google-meet.applescript")
     local oldString = "alert%('Hello, world!'%)"
     local newString = jsCode:gsub("\"", "\\\"")
-    local contents = loadfile("run-js-on-google-meet.applescript")
-
     local modifiedContents = string.gsub(contents, oldString, newString)
-    local result, object, descriptor = hs.osascript.applescript(modifiedContents)
-    if not result then
+    
+    local ok, output, _ = hs.osascript.applescript(modifiedContents)
+    if not ok then
         print("JS code failed: \n" .. jsCode)
+        return ok
     end
-    return result
+    return output
 end
 
 local function executeJavaScriptFromFile(action, file)
