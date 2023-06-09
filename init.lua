@@ -1,8 +1,10 @@
+logger = hs.logger.new("GoogleMeet", "info")
+
 local function loadfile(filename)
     local filepath = hs.spoons.resourcePath(filename)
     local file = io.open(filepath, "r")
     if file == nil then
-        print("Could not open file: " .. filename)
+        logger.e("Could not open file: " .. filename)
         return
     end
     local contents = file:read("*a")
@@ -16,20 +18,20 @@ local function executeJavaScript(jsCode)
     local oldString = "alert%('Hello, world!'%)"
     local newString = jsCode:gsub("\"", "\\\"")
     local modifiedContents = string.gsub(contents, oldString, newString)
-    
+
     local ok, output, _ = hs.osascript.applescript(modifiedContents)
     if not ok then
-        print("JS code failed: \n" .. jsCode)
+        logger.e("JS code failed: \n" .. jsCode)
         return ok
     end
     return output
 end
 
 local function executeJavaScriptFromFile(action, file)
-    print("Performing action: " .. action)
+    logger.i("Performing action: " .. action)
     local jsCode = loadfile(file)
     if not executeJavaScript(jsCode) then
-        print("Failed to perform action: " .. action)
+        logger.e("Failed to perform action: " .. action)
         return false
     end
     return true
@@ -47,10 +49,10 @@ end
 
 -- Helper function to execute a JS function with a selector
 local function executeCheckAndClickElement(action, selector)
-    print("Performing action: " .. action)
+    logger.i("Performing action: " .. action)
     local jsCode = checkAndClickElementJS(selector)
     if not executeJavaScript(jsCode) then
-        print("Failed to perform action: " .. action)
+        logger.e("Failed to perform action: " .. action)
         return false
     end
     return true
@@ -62,13 +64,13 @@ local function executeMeetCmd(toggleFeature, shortcut)
     hs.timer.doAfter(0.1, function()
         hs.eventtap.keyStroke({"cmd"}, shortcut)
     end)
-    print("Toggled " .. toggleFeature .. " on Google Meet")
+    logger.i("Toggled " .. toggleFeature .. " on Google Meet")
     return true
 end
 
 -- Function to join the next meeting
 local function joinNextMeeting()
-    print("Joining Meeting")
+    logger.i("Joining Meeting")
     executeJavaScriptFromFile("Choose and click meeting", "click-on-closest-time.js")
     -- div[data-begin-time]
     hs.timer.doAfter(5, function()
@@ -81,7 +83,7 @@ end
 
 -- Function to join the next meeting
 local function LeaveMeetingAndJoinNext()
-    print("Leaving meeting and joinin the next one")
+    logger.i("Leaving meeting and joinin the next one")
     executeCheckAndClickElement("Leave meeting", 'button[aria-label=\"Leave call\"]')
     hs.timer.doAfter(4, function()
         executeCheckAndClickElement("Really leave meeting", 'button[jsname=\"dqt8Pb\"]')
