@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0  # Use the ref you want to point at
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/Calinou/pre-commit-luacheck
+    rev: v1.0.0
+    hooks:
+      - id: luacheck
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0-alpha.9-for-vscode  # Use the ref you want to point at
+    hooks:
+      - id: prettier
+        files: \.js$

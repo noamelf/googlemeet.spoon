@@ -17,10 +17,10 @@ local function executeJavaScript(jsCode)
     local contents = loadfile("run-js-on-google-meet.applescript")
 
     local modifiedContents = string.gsub(contents, oldString, newString)
-    print(modifiedContents)
-    local ok, clicked = hs.osascript.applescript(modifiedContents)
-    if not ok then
-        print("applescript failed: \n" .. modifiedContents)
+
+    local result, object, descriptor = hs.osascript.applescript(modifiedContents)
+    if not result then
+        print("JS code failed: \n" .. jsCode)
     end
     print(ok, clicked)
     return (ok and clicked)
