@@ -1,6 +1,7 @@
 var now = new Date();
 var closest;
 var closestDiff = Infinity;
+var clicked = false;
 
 var divs = document.querySelectorAll("div[data-begin-time]");
 
@@ -18,4 +19,7 @@ divs.forEach(function (div) {
 
 if (closest) {
   closest.click(); // Perform a click event on the closest time div
+  clicked = true;
 }
+
+clicked;
