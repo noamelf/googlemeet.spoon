@@ -1,5 +1,6 @@
 var clicked = false;
-var element = document.querySelector("<<selector>>");
+// prettier-ignore
+var element = document.querySelector('<<selector>>');
 if (element) {
   element.click();
   clicked = true;
