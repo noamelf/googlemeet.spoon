@@ -83,9 +83,9 @@ end
 -- Function to join the next meeting
 local function LeaveMeetingAndJoinNext()
     logger.i("Leaving meeting and joinin the next one")
-    clickElement('button[aria-label=\"Leave call\"]')
+    clickElement('button[aria-label="Leave call"]')
     hs.timer.doAfter(4, function()
-        clickElement('button[jsname=\"dqt8Pb\"]')
+        clickElement('button[jsname="dqt8Pb"]')
         hs.timer.doAfter(4, function()
             joinNextMeeting()
         end)
