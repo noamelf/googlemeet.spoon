@@ -73,7 +73,7 @@ local function joinNextMeeting()
     logger.i("Joining Meeting")
     executeJavaScriptFromFile("Choose and click meeting", "click-on-closest-time.js")
     -- div[data-begin-time]
-    hs.timer.doAfter(5, function()
+    hs.timer.doAfter(7, function()
         executeMeetCmd("microphone", "d")
         executeMeetCmd("camera", "e")
         executeCheckAndClickElement("Join actual meeting", 'button[jsname=\"Qx7uuf\"]')
