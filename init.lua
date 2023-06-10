@@ -16,46 +16,30 @@ end
 local function executeJavaScript(jsCode)
     local contents = loadfile("run-js-on-google-meet.applescript")
     local oldString = "alert%('Hello, world!'%)"
-    local newString = jsCode:gsub("\"", "\\\"")
+    local newString = jsCode:gsub('\"', "\\\"")
     local modifiedContents = string.gsub(contents, oldString, newString)
+
+    logger.d("Applescript: \n" .. modifiedContents)
 
     local ok, output, _ = hs.osascript.applescript(modifiedContents)
     if not ok then
-        logger.e("JS code failed: \n" .. jsCode)
+        logger.e("Applescript failed: \n" .. modifiedContents)
         return ok
     end
     return output
 end
 
-local function executeJavaScriptFromFile(action, file)
-    logger.i("Performing action: " .. action)
+local function executeJavaScriptFromFile(file)
     local jsCode = loadfile(file)
-    if not executeJavaScript(jsCode) then
-        logger.e("Failed to perform action: " .. action)
-        return false
-    end
-    return true
-end
-
--- JavaScript function to check for element existence and click
-local function checkAndClickElementJS(selector)
-    return [[
-        var element = document.querySelector(']] .. selector .. [[');
-        if (element) {
-            element.click();
-        }
-    ]]
+    return executeJavaScript(jsCode)
 end
 
 -- Helper function to execute a JS function with a selector
-local function executeCheckAndClickElement(action, selector)
-    logger.i("Performing action: " .. action)
-    local jsCode = checkAndClickElementJS(selector)
-    if not executeJavaScript(jsCode) then
-        logger.e("Failed to perform action: " .. action)
-        return false
-    end
-    return true
+local function clickElement(selector)
+    logger.d("Clicking element" .. selector)
+    local contents = loadfile("click-element.js")
+    local jsCode = string.gsub(contents, "<<selector>>", selector)
+    return executeJavaScript(jsCode)
 end
 
 -- Utility function to execute Google Meet commands
@@ -68,32 +52,46 @@ local function executeMeetCmd(toggleFeature, shortcut)
     return true
 end
 
+local function joinActualMeeting()
+    clickElement('div[aria-label=\"Turn off microphone (⌘ + d)\"]')
+    clickElement('div[aria-label=\"Turn off camera (⌘ + e)\"]')
+    clickElement('button[jsname=\"Qx7uuf\"]')
+end
+
 -- Function to join the next meeting
 local function joinNextMeeting()
     logger.i("Joining Meeting")
-    executeJavaScriptFromFile("Choose and click meeting", "click-on-closest-time.js")
-    -- div[data-begin-time]
-    hs.timer.doAfter(7, function()
-        executeMeetCmd("microphone", "d")
-        executeMeetCmd("camera", "e")
-        executeCheckAndClickElement("Join actual meeting", 'button[jsname=\"Qx7uuf\"]')
-    end)
-    return true
+    if executeJavaScriptFromFile("click-on-closest-time.js") then
+        hs.timer.doAfter(7, joinActualMeeting)
+        return true
+    else
+        logger.e('Failed to click on the next meeting')
+    end
+
+    return false
+end
+
+local function joinMeetingOnSchedule()
+    logger.i("Checking if meeting started, if started, click it")
+    if executeJavaScriptFromFile("click-on-meeting-starting.js") then
+        hs.timer.doAfter(7, joinActualMeeting)
+        return true
+    end
+    return false
 end
 
 -- Function to join the next meeting
 local function LeaveMeetingAndJoinNext()
     logger.i("Leaving meeting and joinin the next one")
-    executeCheckAndClickElement("Leave meeting", 'button[aria-label=\"Leave call\"]')
+    clickElement('button[aria-label=\"Leave call\"]')
     hs.timer.doAfter(4, function()
-        executeCheckAndClickElement("Really leave meeting", 'button[jsname=\"dqt8Pb\"]')
+        clickElement('button[jsname=\"dqt8Pb\"]')
         hs.timer.doAfter(4, function()
             joinNextMeeting()
         end)
     end)
     return true
 end
-
 
 -- Create the Spoon object
 local obj = {}
@@ -111,6 +109,16 @@ function obj:bindHotKeys(mapping)
         LeaveMeetingAndJoinNext = LeaveMeetingAndJoinNext
     }
     hs.spoons.bindHotkeysToSpec(spec, mapping)
+    return self
+end
+
+function obj:start()
+    hs.timer.new(10, joinMeetingOnSchedule):start()
+    return self
+end
+
+function obj:setLogLevel(level)
+    logger.setLogLevel(level)
     return self
 end
 
