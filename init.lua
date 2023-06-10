@@ -16,7 +16,7 @@ end
 local function executeJavaScript(jsCode)
     local contents = loadfile("run-js-on-google-meet.applescript")
     local oldString = "alert%('Hello, world!'%)"
-    local newString = jsCode:gsub('\"', "\\\"")
+    local newString = jsCode:gsub('"', '\\"')
     local modifiedContents = string.gsub(contents, oldString, newString)
 
     logger.d("Applescript: \n" .. modifiedContents)
@@ -53,9 +53,9 @@ local function executeMeetCmd(toggleFeature, shortcut)
 end
 
 local function joinActualMeeting()
-    clickElement('div[aria-label=\"Turn off microphone (⌘ + d)\"]')
-    clickElement('div[aria-label=\"Turn off camera (⌘ + e)\"]')
-    clickElement('button[jsname=\"Qx7uuf\"]')
+    clickElement('div[aria-label="Turn off microphone (⌘ + d)"]')
+    clickElement('div[aria-label="Turn off camera (⌘ + e)"]')
+    clickElement('button[jsname="Qx7uuf"]')
 end
 
 -- Function to join the next meeting
