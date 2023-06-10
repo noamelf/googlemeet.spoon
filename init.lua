@@ -16,12 +16,14 @@ end
 local function executeJavaScript(jsCode)
     local contents = loadfile("run-js-on-google-meet.applescript")
     local oldString = "alert%('Hello, world!'%)"
-    local newString = jsCode:gsub("\"", "\\\"")
+    local newString = jsCode:gsub('\"', "\\\"")
     local modifiedContents = string.gsub(contents, oldString, newString)
+
+    logger.d("Applescript: \n" .. modifiedContents)
 
     local ok, output, _ = hs.osascript.applescript(modifiedContents)
     if not ok then
-        logger.e("JS code failed: \n" .. jsCode)
+        logger.e("Applescript failed: \n" .. modifiedContents)
         return ok
     end
     return output
@@ -34,6 +36,7 @@ end
 
 -- Helper function to execute a JS function with a selector
 local function clickElement(selector)
+    logger.d("Clicking element" .. selector)
     local contents = loadfile("click-element.js")
     local jsCode = string.gsub(contents, "<<selector>>", selector)
     return executeJavaScript(jsCode)
@@ -50,8 +53,8 @@ local function executeMeetCmd(toggleFeature, shortcut)
 end
 
 local function joinActualMeeting()
-    executeMeetCmd("microphone", "d")
-    executeMeetCmd("camera", "e")
+    clickElement('div[aria-label=\"Turn off microphone (⌘ + d)\"]')
+    clickElement('div[aria-label=\"Turn off camera (⌘ + e)\"]')
     clickElement('button[jsname=\"Qx7uuf\"]')
 end
 
@@ -61,7 +64,10 @@ local function joinNextMeeting()
     if executeJavaScriptFromFile("click-on-closest-time.js") then
         hs.timer.doAfter(7, joinActualMeeting)
         return true
+    else
+        logger.e('Failed to click on the next meeting')
     end
+
     return false
 end
 
@@ -108,6 +114,11 @@ end
 
 function obj:start()
     hs.timer.new(10, joinMeetingOnSchedule):start()
+    return self
+end
+
+function obj:setLogLevel(level)
+    logger.setLogLevel(level)
     return self
 end
 
