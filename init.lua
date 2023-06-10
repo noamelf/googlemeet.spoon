@@ -1,8 +1,10 @@
+logger = hs.logger.new("GoogleMeet", "info")
+
 local function loadfile(filename)
-    filepath = hs.spoons.resourcePath(filename)
+    local filepath = hs.spoons.resourcePath(filename)
     local file = io.open(filepath, "r")
     if file == nil then
-        print("Could not open file: " .. filename)
+        logger.e("Could not open file: " .. filename)
         return
     end
     local contents = file:read("*a")
@@ -12,18 +14,17 @@ end
 
 -- Function to execute JavaScript via AppleScript
 local function executeJavaScript(jsCode)
+    local contents = loadfile("run-js-on-google-meet.applescript")
     local oldString = "alert%('Hello, world!'%)"
     local newString = jsCode:gsub("\"", "\\\"")
-    local contents = loadfile("run-js-on-google-meet.applescript")
-
     local modifiedContents = string.gsub(contents, oldString, newString)
 
-    local result, object, descriptor = hs.osascript.applescript(modifiedContents)
-    if not result then
-        print("JS code failed: \n" .. jsCode)
+    local ok, output, _ = hs.osascript.applescript(modifiedContents)
+    if not ok then
+        logger.e("JS code failed: \n" .. jsCode)
+        return ok
     end
-    print(ok, clicked)
-    return (ok and clicked)
+    return output
 end
 
 local function executeJavaScriptFromFile(file)
@@ -44,7 +45,7 @@ local function executeMeetCmd(toggleFeature, shortcut)
     hs.timer.doAfter(0.1, function()
         hs.eventtap.keyStroke({"cmd"}, shortcut)
     end)
-    print("Toggled " .. toggleFeature .. " on Google Meet")
+    logger.i("Toggled " .. toggleFeature .. " on Google Meet")
     return true
 end
 
@@ -56,18 +57,18 @@ end
 
 -- Function to join the next meeting
 local function joinNextMeeting()
-    print("Joining Meeting")
+    logger.i("Joining Meeting")
     if executeJavaScriptFromFile("click-on-closest-time.js") then
-        hs.timer.doAfter(5, joinActualMeeting)
+        hs.timer.doAfter(7, joinActualMeeting)
         return true
     end
     return false
 end
 
 local function joinMeetingOnSchedule()
-    print("Checking if meeting started, if started, click it")
+    logger.i("Checking if meeting started, if started, click it")
     if executeJavaScriptFromFile("click-on-meeting-starting.js") then
-        hs.timer.doAfter(5, joinActualMeeting)
+        hs.timer.doAfter(7, joinActualMeeting)
         return true
     end
     return false
@@ -75,7 +76,7 @@ end
 
 -- Function to join the next meeting
 local function LeaveMeetingAndJoinNext()
-    print("Leaving meeting and joinin the next one")
+    logger.i("Leaving meeting and joinin the next one")
     clickElement('button[aria-label=\"Leave call\"]')
     hs.timer.doAfter(4, function()
         clickElement('button[jsname=\"dqt8Pb\"]')
