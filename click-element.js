@@ -2,7 +2,8 @@ var clicked = false;
 // prettier-ignore
 var element = document.querySelector('<<selector>>');
 if (element) {
-  var event = new MouseEvent("click", {
+  // prettier-ignore
+  var event = new MouseEvent('click', {
     view: window,
     bubbles: true,
     cancelable: true,

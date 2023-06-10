@@ -22,6 +22,7 @@ local function executeJavaScript(jsCode)
     logger.d("Applescript: \n" .. modifiedContents)
 
     local ok, output, _ = hs.osascript.applescript(modifiedContents)
+    logger.d(ok, output, _)
     if not ok then
         logger.e("Applescript failed: \n" .. modifiedContents)
         return ok
@@ -52,9 +53,21 @@ local function executeMeetCmd(toggleFeature, shortcut)
     return true
 end
 
+local function toggleMic()
+    logger.i('Toggle Microphone')
+    if not clickElement('button[aria-label="Turn off microphone (⌘ + d)"]') then
+        clickElement('button[aria-label="Turn on microphone (⌘ + d)"]')
+    end
+end
+
+local function toggleCamera()
+    logger.i('Toggle camera')
+    if not clickElement('button[aria-label="Turn off camera (⌘ + e)"]') then
+        clickElement('button[aria-label="Turn on camera (⌘ + e)"]')
+    end
+end
+
 local function joinActualMeeting()
-    clickElement('div[aria-label="Turn off microphone (⌘ + d)"]')
-    clickElement('div[aria-label="Turn off camera (⌘ + e)"]')
     clickElement('button[jsname="Qx7uuf"]')
 end
 
@@ -62,7 +75,7 @@ end
 local function joinNextMeeting()
     logger.i("Joining Meeting")
     if executeJavaScriptFromFile("click-on-closest-time.js") then
-        hs.timer.doAfter(7, joinActualMeeting)
+        hs.timer.doAfter(5, joinActualMeeting)
         return true
     else
         logger.e('Failed to click on the next meeting')
@@ -103,8 +116,8 @@ obj.author = "Noam Elfanbaum"
 
 function obj:bindHotKeys(mapping)
     local spec = {
-        toggleMic = hs.fnutils.partial(executeMeetCmd, "microphone", "d"),
-        toggleCamera = hs.fnutils.partial(executeMeetCmd, "camera", "e"),
+        toggleMic = toggleMic,
+        toggleCamera = toggleCamera,
         joinNextMeeting = joinNextMeeting,
         LeaveMeetingAndJoinNext = LeaveMeetingAndJoinNext
     }
