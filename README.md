@@ -29,3 +29,7 @@ The above code will bind the following functionalities to their respective key c
 - toggleCamera function to the cmd+alt+s key command. This function toggles the state of the camera in Google Meet.
 - joinNextMeeting function to the F3 key. This function allows you to join the next scheduled meeting automatically.
 - LeaveMeetingAndJoinNext function to the F4 key. This function allows you to leave the current meeting and join the next scheduled meeting seamlessly.
+
+## Action items
+
+- [] Add "need to drop off automation"

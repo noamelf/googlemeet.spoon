@@ -19,10 +19,10 @@ local function executeJavaScript(jsCode)
     local newString = jsCode:gsub('"', '\\"')
     local modifiedContents = string.gsub(contents, oldString, newString)
 
-    logger.d("Applescript: \n" .. modifiedContents)
+    -- logger.d("Applescript: \n" .. modifiedContents)
 
     local ok, output, _ = hs.osascript.applescript(modifiedContents)
-    logger.d(ok, output, _)
+    logger.d("ok: " .. ok .. " output: " .. output .. " raw output: " .. _)
     if not ok then
         logger.e("Applescript failed: \n" .. modifiedContents)
         return ok
@@ -37,7 +37,7 @@ end
 
 -- Helper function to execute a JS function with a selector
 local function clickElement(selector)
-    logger.d("Clicking element" .. selector)
+    logger.d("Clicking element: " .. selector)
     local contents = loadfile("click-element.js")
     local jsCode = string.gsub(contents, "<<selector>>", selector)
     return executeJavaScript(jsCode)
