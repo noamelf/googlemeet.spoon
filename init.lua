@@ -22,7 +22,7 @@ local function executeJavaScript(jsCode)
     -- logger.d("Applescript: \n" .. modifiedContents)
 
     local ok, output, _ = hs.osascript.applescript(modifiedContents)
-    logger.d("ok: " .. ok .. " output: " .. output .. " raw output: " .. _)
+    logger.d("ok: ", ok, " output: ", output, " raw output: ", _)
     if not ok then
         logger.e("Applescript failed: \n" .. modifiedContents)
         return ok

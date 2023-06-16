@@ -32,4 +32,4 @@ The above code will bind the following functionalities to their respective key c
 
 ## Action items
 
-- [] Add "need to drop off automation"
+- [] Add "need to drop off" automation
